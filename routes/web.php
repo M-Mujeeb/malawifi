@@ -7,7 +7,7 @@ Route::get('/', function () {
     return redirect()->route('profiles.create');
 });
 
-Route::get('/sign-in', [ProfileController::class, 'login'])->name('profiles.login');
+Route::get('/sign-in', [ProfileController::class, 'login'])->name('login');
 Route::post('/sign-in', [ProfileController::class, 'loginSubmit'])->name('profiles.loginSubmit');
 
 Route::get('/register', [ProfileController::class, 'register'])->name('profiles.register');

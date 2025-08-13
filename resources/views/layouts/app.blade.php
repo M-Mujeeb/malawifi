@@ -10,6 +10,9 @@
   
   {{-- Lucide Icons --}}
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  {{-- Favicon --}}
+  <link rel="icon" href="{{ asset('favicon.ico') }}">
   
   {{-- Google Fonts --}}
   <link rel="preconnect" href="https://fonts.googleapis.com">

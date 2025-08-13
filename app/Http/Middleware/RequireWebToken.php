@@ -16,7 +16,7 @@ class RequireWebToken
     public function handle(Request $request, Closure $next): Response
     {
         if (!$request->session()->has('access_token')) {
-            return redirect()->route('profiles.login')
+            return redirect()->route('login')
                 ->withErrors(['auth' => 'Please login first.']);
         }
         return $next($request);

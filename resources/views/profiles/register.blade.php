@@ -33,6 +33,9 @@
   <!-- Lucide -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+   {{-- Favicon --}}
+   <link rel="icon" href="{{ asset('favicon.ico') }}">
+
   <style>
     html, body { height: 100%; }
     .input-icon { position:absolute; left:.875rem; top:50%; transform:translateY(-50%); color:#94a3b8 }
@@ -136,7 +139,7 @@
 
           <p class="text-center text-sm text-slate-600">
             Already have an account?
-            <a href="{{ route('profiles.login') }}" class="font-semibold text-brand-600 hover:text-brand-500">Sign in</a>
+            <a href="{{ route('login') }}" class="font-semibold text-brand-600 hover:text-brand-500">Sign in</a>
           </p>
         </form>
       </div>

@@ -61,6 +61,9 @@
             border-radius: 8px;
         }
     </style>
+
+     {{-- Favicon --}}
+  <link rel="icon" href="{{ asset('favicon.ico') }}">
 </head>
 
 <body class="bg-slate-50 text-slate-900 font-sans">

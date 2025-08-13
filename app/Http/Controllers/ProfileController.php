@@ -21,7 +21,7 @@ class ProfileController extends Controller
     $user = Auth::user();
 
     if (!$user) {
-        return redirect()->route('profiles.login')
+        return redirect()->route('login')
             ->withErrors(['auth' => 'Please login first.']);
     }
 
@@ -48,7 +48,7 @@ class ProfileController extends Controller
     $user = Auth::user();
     
     if (!$user) {
-        return redirect()->route('profiles.login')
+        return redirect()->route('login')
             ->withErrors(['auth' => 'Please login first.']);
     }
 
@@ -215,7 +215,7 @@ class ProfileController extends Controller
 
     public function login()
     {
-        return view('profiles.login');
+        return view('profiles.login');  
     }
 
     public function loginSubmit(Request $request)
@@ -283,7 +283,7 @@ class ProfileController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('profiles.login')
+        return redirect()->route('login')
             ->with('success', 'Account created successfully! Please log in.');
     }
 
