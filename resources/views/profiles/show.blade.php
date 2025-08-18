@@ -109,7 +109,7 @@
 
             <!-- Footer Text -->
             <div class="mt-12 text-center text-gray-600 text-sm border-t border-gray-200 pt-4">
-                <p> To purchase MalaWi-Fi please visit our <a href="https://malawi-fi.com" target="_blank"
+                <p> To purchase MalaWi-Fi please visit our <a href="https://malawichair.com/products/malawi-fi-tap-to-connect-wi-fi-device" target="_blank"
                         class="text-blue-500 hover:underline">website</a></p>
                 Tap. Connect. Done
             </div>
