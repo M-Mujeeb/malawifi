@@ -2,7 +2,7 @@
 @section('title', ($profile->name ?? '@' . $profile->username) . ' — Profile')
 
 @section('content')
-    <div class="card fade-in h-[800px] bg-[#F6F6F6] max-w-[900px] mx-auto">
+    <div class="card fade-in h-[750px] bg-[#F6F6F6] max-w-[900px] mx-auto">
         {{-- Cover Image --}}
         <div class="relative h-48 sm:h-64 bg-gray-200">
             @if ($profile->cover_image_path)
@@ -87,6 +87,12 @@
                         @endforeach
                     </div>
                 </div>
+            </div>
+
+            <!-- Footer Text -->
+            <div class="mt-12 text-center text-gray-600 text-sm border-t border-gray-200 pt-4">
+                <p> To purchase MalaWi-Fi please visit our  <a href="https://malawi-fi.com" target="_blank" class="text-blue-500 hover:underline">website</a></p>
+                Tap. Connect. Done 
             </div>
         </div>
     </div>

@@ -699,57 +699,80 @@
       }
     });
 
-    // Validate required file inputs
+    // Validate required file inputs (with existing image check)
     const profileInput = form.querySelector('input[name="profile_image"]');
-    const coverInput = form.querySelector('input[name="cover_image"]');
-
-    if (!profileInput.files?.length) {
+    const profileDropzone = profileInput.parentElement;
+    let hasProfileImage = !!profileInput.files?.length;
+    if (!hasProfileImage) {
+      const existingImg = profileDropzone.querySelector('div.w-16.h-16 img[src]');
+      if (existingImg) {
+        hasProfileImage = true;
+      }
+    }
+    if (!hasProfileImage) {
       const errorElement = document.getElementById('profileInputError');
       errorElement.classList.remove('hidden');
-      profileInput.parentElement.classList.add('border-red-300', 'shake');
+      profileDropzone.classList.add('border-red-300', 'shake');
       hasErrors = true;
       customErrors.push('Profile image is required');
       
       setTimeout(() => {
-        profileInput.parentElement.classList.remove('border-red-300', 'shake');
+        profileDropzone.classList.remove('border-red-300', 'shake');
       }, 1000);
     } else {
       document.getElementById('profileInputError').classList.add('hidden');
-      profileInput.parentElement.classList.remove('border-red-300');
+      profileDropzone.classList.remove('border-red-300');
     }
 
-    if (!coverInput.files?.length) {
+    const coverInput = form.querySelector('input[name="cover_image"]');
+    const coverDropzone = coverInput.parentElement;
+    let hasCoverImage = !!coverInput.files?.length;
+    if (!hasCoverImage) {
+      const existingImg = coverDropzone.querySelector('div.w-16.h-16 img[src]');
+      if (existingImg) {
+        hasCoverImage = true;
+      }
+    }
+    if (!hasCoverImage) {
       const errorElement = document.getElementById('coverInputError');
       errorElement.classList.remove('hidden');
-      coverInput.parentElement.classList.add('border-red-300', 'shake');
+      coverDropzone.classList.add('border-red-300', 'shake');
       hasErrors = true;
       customErrors.push('Cover image is required');
       
       setTimeout(() => {
-        coverInput.parentElement.classList.remove('border-red-300', 'shake');
+        coverDropzone.classList.remove('border-red-300', 'shake');
       }, 1000);
     } else {
       document.getElementById('coverInputError').classList.add('hidden');
-      coverInput.parentElement.classList.remove('border-red-300');
+      coverDropzone.classList.remove('border-red-300');
     }
 
-    // Validate social media file inputs
+    // Validate social media file inputs (with existing image check)
     const socialFileInputs = form.querySelectorAll('input[name*="social_links"][type="file"]');
     socialFileInputs.forEach(field => {
       const index = field.name.match(/\[(\d+)\]/)?.[1];
-      if (index && !field.files?.length) {
+      const dropzone = field.parentElement;
+      let hasImage = !!field.files?.length;
+      if (!hasImage) {
+        const existingImg = dropzone.querySelector('div.w-16.h-16 img[src]');
+        if (existingImg) {
+          hasImage = true;
+        }
+      }
+      if (index && !hasImage) {
         const errorElement = document.getElementById(`socialImageInputError${index}`);
         errorElement.classList.remove('hidden');
-        field.parentElement.classList.add('border-red-300', 'shake');
+        dropzone.classList.add('border-red-300', 'shake');
         hasErrors = true;
         customErrors.push(`Social media icon for ${field.closest('.social-input-group').querySelector('input[readonly]').value} is required`);
         
         setTimeout(() => {
-          field.parentElement.classList.remove('border-red-300', 'shake');
+          dropzone.classList.remove('border-red-300', 'shake');
         }, 1000);
       } else if (index) {
         document.getElementById(`socialImageInputError${index}`)?.classList.add('hidden');
-        field.parentElement.classList.remove('border-red-300');
+        dropzone.classList.remove('border-red-300');
       }
     });
 

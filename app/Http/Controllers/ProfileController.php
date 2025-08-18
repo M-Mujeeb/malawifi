@@ -60,7 +60,6 @@ public function googleCallback(Request $request)
     // Log them in with the web guard
     Auth::login($user, remember: true);
 
-    // Your simple “web token” for middleware
     $request->session()->regenerate();
     $webToken = Str::random(60);
     session(['access_token' => $webToken]);
