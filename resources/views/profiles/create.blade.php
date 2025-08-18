@@ -251,7 +251,7 @@
             </div>
             <p class="text-sm text-gray-600 mb-6 flex items-center gap-2" id="socialError">
               <i data-lucide="info" class="w-4 h-4"></i>
-              Select a platform and upload an icon to add its link and title
+              Select a platform to add its link and title.
             </p>
 
             <div class="space-y-4">
@@ -262,6 +262,7 @@
                   <option value="facebook">Facebook</option>
                   <option value="instagram">Instagram</option>
                   <option value="google">Google</option>
+                  <option value="other">Other</option>
                 </select>
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transform transition-transform duration-200"></i>
@@ -273,6 +274,7 @@
               </button>
 
               <div id="socialInputsContainer" class="space-y-6">
+                {{-- MODIFICATION START --}}
                 @foreach($socials as $index => $social)
                   <div class="social-input-group space-y-6 border-t pt-6 relative" id="social-group-{{ $index }}">
                     <button type="button" class="absolute top-4 right-0 text-red-500 hover:text-red-600" onclick="removeSocialInput({{ $index }})">
@@ -286,6 +288,9 @@
                         <input readonly class="inp inp-icon" value="{{ ucfirst($social->data['platform']) }}" disabled>
                       </div>
                     </div>
+
+                    {{-- Show Icon Uploader ONLY for 'other' platform --}}
+                    @if($social->data['platform'] === 'other')
                     <div>
                       <label class="label flex items-center gap-2">
                         <i data-lucide="image" class="w-4 h-4 text-blue-600"></i>
@@ -308,6 +313,8 @@
                         <p class="text-xs text-red-600 mt-2 hidden" id="socialImageInputError{{ $index }}">Social media icon is required</p>
                       </div>
                     </div>
+                    @endif
+
                     <div>
                       <label class="label">
                         Title <span class="text-red-500">*</span>
@@ -328,6 +335,7 @@
                     </div>
                   </div>
                 @endforeach
+                {{-- MODIFICATION END --}}
               </div>
             </div>
           </div>
@@ -531,11 +539,20 @@
   // Social media input functionality
   let socialInputCount = {{ $socials->count() }};
 
+  // --- MODIFICATION START ---
   function addSocialInputs(platform) {
     if (!platform) {
       const error = document.getElementById('socialError');
       error.style.color = 'red';
       error.textContent = 'Please select a platform.';
+      return;
+    }
+
+    // Check against current number of social links
+    if (document.querySelectorAll('.social-input-group').length >= 3) {
+      const error = document.getElementById('socialError');
+      error.style.color = 'red';
+      error.textContent = 'You can only add a maximum of three social links.';
       return;
     }
 
@@ -545,6 +562,31 @@
     platformDiv.className = 'social-input-group space-y-6 border-t pt-6 relative';
     platformDiv.id = `social-group-${socialInputCount}`;
     
+    let iconUploadHTML = '';
+    // Only show the icon uploader if the platform is 'other'
+    if (platform === 'other') {
+      iconUploadHTML = `
+        <div>
+          <label class="label flex items-center gap-2">
+            <i data-lucide="image" class="w-4 h-4 text-blue-600"></i>
+            Upload Icon <span class="text-red-500">*</span>
+          </label>
+          <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer" onclick="document.getElementById('socialImageInput${socialInputCount}').click()">
+            <input type="file" name="social_links[${socialInputCount}][image]" accept="image/jpeg,image/png,image/gif" class="hidden" id="socialImageInput${socialInputCount}" onchange="previewSocialImg(event, 'socialPreview${socialInputCount}')" required>
+            <div class="w-16 h-16 bg-gray-100 rounded-xl mx-auto mb-3 flex items-center justify-center">
+              <i data-lucide="upload" class="w-6 h-6 text-gray-400"></i>
+            </div>
+            <p class="text-sm text-gray-600 mb-1">Click to upload icon</p>
+            <p class="text-xs text-gray-500">Recommended: 100x100px, JPG/PNG/GIF, max 5MB</p>
+            <div class="mt-4">
+              <img id="socialPreview${socialInputCount}" class="h-16 w-16 rounded-xl object-cover mx-auto hidden" alt="Social preview">
+            </div>
+            <p class="text-xs text-red-600 mt-2 hidden" id="socialImageInputError${socialInputCount}">Social media icon is required</p>
+          </div>
+        </div>
+      `;
+    }
+
     platformDiv.innerHTML = `
       <button type="button" class="absolute top-4 right-0 text-red-500 hover:text-red-600" onclick="removeSocialInput(${socialInputCount})">
         <i data-lucide="trash-2" class="w-5 h-5"></i>
@@ -557,24 +599,7 @@
           <input readonly class="inp inp-icon" value="${platform.charAt(0).toUpperCase() + platform.slice(1)}" disabled>
         </div>
       </div>
-      <div>
-        <label class="label flex items-center gap-2">
-          <i data-lucide="image" class="w-4 h-4 text-blue-600"></i>
-          Upload Icon <span class="text-red-500">*</span>
-        </label>
-        <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer" onclick="document.getElementById('socialImageInput${socialInputCount}').click()">
-          <input type="file" name="social_links[${socialInputCount}][image]" accept="image/jpeg,image/png,image/gif" class="hidden" id="socialImageInput${socialInputCount}" onchange="previewSocialImg(event, 'socialPreview${socialInputCount}')">
-          <div class="w-16 h-16 bg-gray-100 rounded-xl mx-auto mb-3 flex items-center justify-center">
-            <i data-lucide="upload" class="w-6 h-6 text-gray-400"></i>
-          </div>
-          <p class="text-sm text-gray-600 mb-1">Click to upload icon</p>
-          <p class="text-xs text-gray-500">Recommended: 100x100px, JPG/PNG/GIF, max 5MB</p>
-          <div class="mt-4">
-            <img id="socialPreview${socialInputCount}" class="h-16 w-16 rounded-xl object-cover mx-auto hidden" alt="Social preview">
-          </div>
-          <p class="text-xs text-red-600 mt-2 hidden" id="socialImageInputError${socialInputCount}">Social media icon is required</p>
-        </div>
-      </div>
+      ${iconUploadHTML}
       <div>
         <label class="label">
           Title <span class="text-red-500">*</span>
@@ -600,6 +625,7 @@
     platformDiv.classList.add('slide-up');
     setTimeout(() => platformDiv.style.opacity = '1', 10);
   }
+  // --- MODIFICATION END ---
 
   function removeSocialInput(id) {
     const element = document.getElementById(`social-group-${id}`);
@@ -615,7 +641,8 @@
     if (select.value) {
       addSocialInputs(select.value);
       error.style.color = '';
-      error.textContent = 'Select a platform and upload an icon to add its link and title';
+      error.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i> Select a platform to add its link and title.`;
+      lucide.createIcons();
       select.value = ''; // Reset dropdown
     } else {
       error.style.color = 'red';

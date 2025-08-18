@@ -21,21 +21,25 @@
                         @endif
                     </div>
                     <div class="min-w-[240px] slide-up">
-                        <h1 class="text-2xl font-normal tracking-tight text-black flex items-center justify-center gap-2">{{ $profile->name }}</h1>
+                        <h1 class="text-2xl font-normal tracking-tight text-black flex items-center justify-center gap-2">
+                            {{ $profile->name }}</h1>
                         <h4 class="text-gray-600 text-lg mt-1 flex items-center justify-center gap-2">
                             <i data-lucide="at-sign" class="w-5 h-5 text-gray-500"></i>{{ $profile->username }}
                         </h4>
-                        
+
                         @if ($profile->company)
-                            <h4 class="text-gray-700 mt-2 font-medium flex items-center justify-center gap-2">{{ $profile->company }}</h4>
+                            <h4 class="text-gray-700 mt-2 font-medium flex items-center justify-center gap-2">
+                                {{ $profile->company }}</h4>
                         @endif
                         @if ($profile->email)
-                            <h4 class="text-gray-600 text-md mt-1 flex items-center justify-center gap-2">{{ $profile->email }}</h4>
+                            <h4 class="text-gray-600 text-md mt-1 flex items-center justify-center gap-2">
+                                {{ $profile->email }}</h4>
                         @endif
                         @if ($profile->phone)
-                            <h4 class="text-gray-600 text-md mt-1 flex items-center justify-center gap-2">{{ $profile->phone }}</h4>
+                            <h4 class="text-gray-600 text-md mt-1 flex items-center justify-center gap-2">
+                                {{ $profile->phone }}</h4>
                         @endif
-                        
+
                         <!-- Buttons for Email and Phone -->
                         <div class="mt-4 flex gap-4 justify-center">
                             @if ($profile->email)
@@ -44,7 +48,8 @@
                                 </a>
                             @endif
                             @if ($profile->phone)
-                                <a href="tel:{{ preg_replace('/\D/', '', $profile->phone) }}" class="btn btn-ghost flex items-center gap-2">
+                                <a href="tel:{{ preg_replace('/\D/', '', $profile->phone) }}"
+                                    class="btn btn-ghost flex items-center gap-2">
                                     <i data-lucide="phone" class="w-4 h-4"></i> Call
                                 </a>
                             @endif
@@ -68,17 +73,30 @@
                         @foreach ($socials as $social)
                             @php
                                 $platform = $social->data['platform'] ?? '';
-                                $iconPath = $social->data['icon_path'] ? asset('uploads/' . $social->data['icon_path']) : asset('assets/icons/' . $platform . '.png');
+                                $iconPath = ''; 
+
+                                $defaultIconPlatforms = ['facebook', 'instagram', 'google'];
+
+                                if (in_array($platform, $defaultIconPlatforms)) {
+                                    $iconPath = asset(  $platform . '.png');
+                                } else {
+                                    if (!empty($social->data['icon_path'])) {
+                                        $iconPath = asset('uploads/' . $social->data['icon_path']);
+                                    }
+                                }
+
                                 $colors = [
                                     'facebook' => ['hover:bg-blue-50', 'hover:border-blue-300', 'bg-blue-600'],
                                     'instagram' => ['hover:bg-pink-50', 'hover:border-pink-300', 'bg-pink-500'],
                                     'google' => ['hover:bg-red-50', 'hover:border-red-300', 'bg-red-500'],
                                 ];
+
                                 $hoverBg = $colors[$platform][0] ?? 'hover:bg-gray-100';
                                 $hoverBorder = $colors[$platform][1] ?? 'hover:border-gray-300';
                                 $badgeBg = $colors[$platform][2] ?? 'bg-gray-500';
                             @endphp
-                            <a href="{{ $social->data['url'] }}" target="_blank" class="relative group">
+
+                            <a href="{{ $social->data['url'] ?? '#' }}" target="_blank" class="relative group">
                                 <img src="{{ $iconPath }}" alt="{{ ucfirst($platform) }}"
                                     class="h-24 w-24 p-2 rounded-xl bg-white border border-gray-200 {{ $hoverBg }} {{ $hoverBorder }} transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
                                 <span
@@ -91,8 +109,9 @@
 
             <!-- Footer Text -->
             <div class="mt-12 text-center text-gray-600 text-sm border-t border-gray-200 pt-4">
-                <p> To purchase MalaWi-Fi please visit our  <a href="https://malawi-fi.com" target="_blank" class="text-blue-500 hover:underline">website</a></p>
-                Tap. Connect. Done 
+                <p> To purchase MalaWi-Fi please visit our <a href="https://malawi-fi.com" target="_blank"
+                        class="text-blue-500 hover:underline">website</a></p>
+                Tap. Connect. Done
             </div>
         </div>
     </div>
@@ -105,7 +124,7 @@
                 <div class="flex items-center gap-4">
                     <h3 class="text-xl font-bold text-gray-900 mb-4">Scan QR code to connect to WiFi</h3>
                 </div>
-                
+
                 <div class="mb-6 flex items-center justify-center gap-4">
                     <img id="wifiQrImage" src="{{ route('profiles.wifiQr', $profile) }}" alt="Wi-Fi QR"
                         class="mx-auto rounded-2xl border border-gray-200 shadow-lg w-48 h-48">
@@ -118,7 +137,8 @@
                     @endif
                 </div>
                 <h1 class="font-bold text-sm mt-2 items-center">Note iPhone users</h1>
-                <p class="text-sm items-center">To connect to WiFi, press and hold QR code for 2 sec. and select from pop-up menu.</p>
+                <p class="text-sm items-center">To connect to WiFi, press and hold QR code for 2 sec. and select from pop-up
+                    menu.</p>
                 <h1 class="font-bold text-sm mt-2 items-center">Note Android users</h1>
                 <p class="text-sm items-center">QR code can be downloaded and saved to connect with WiFi.</p>
                 <div class="flex gap-3">
@@ -126,10 +146,10 @@
                         <i data-lucide="download" class="w-4 h-4"></i> QR Code
                     </a>
                     <button class="btn btn-primary flex-1" onclick="closeWifi()">
-                      <i data-lucide="cross" class="w-4 h-4"></i>
-                      Close
+                        <i data-lucide="cross" class="w-4 h-4"></i>
+                        Close
                     </button>
-                  </div>
+                </div>
             </div>
         </div>
     @endif

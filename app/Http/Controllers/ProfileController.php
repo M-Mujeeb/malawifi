@@ -103,116 +103,124 @@ public function googleCallback(Request $request)
      * and create a flexible link record for Wi‑Fi (optional).
      */
     public function store(Request $request)
-{
-    $user = Auth::user();
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return redirect()->route('login')
+                ->withErrors(['auth' => 'Please login first.']);
+        }
     
-    if (!$user) {
-        return redirect()->route('login')
-            ->withErrors(['auth' => 'Please login first.']);
-    }
-
-    $validated = $request->validate([
-        'name' => ['required', 'string', 'max:100'],
-        'company' => ['nullable', 'string', 'max:150'],
-        'phone' => ['nullable', 'string', 'max:20'],
-        'username' => [
-            'required',
-            'string',
-            'max:30',
-            'regex:/^[A-Za-z0-9._-]+$/',
-            Rule::unique('users', 'username')->ignore($user->id),
-            Rule::notIn(['create', 'admin', 'login', 'register', 'api', 'dashboard']),
-        ],
-        'email' => ['nullable', 'email', 'max:190', Rule::unique('users', 'email')->ignore($user->id)],
-        'profile_image' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
-        'cover_image' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:6144'],
-        'wifi_encryption' => [Rule::in(['WPA', 'WEP', 'nopass', 'WPA2'])],
-        'wifi_ssid' => ['string', 'max:100'],
-        'wifi_password' => ['string', 'max:190'],
-        'social_links' => ['array'],
-        'social_links.*.platform' => ['required', Rule::in(['facebook', 'instagram', 'google'])],
-        'social_links.*.title' => ['required', 'string', 'max:100'],
-        'social_links.*.link' => ['required', 'url', 'max:255'],
-        'social_links.*.image' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-    ]);
-
-    // Normalize values
-    if (($validated['wifi_encryption'] ?? null) === 'WPA2') {
-        $validated['wifi_encryption'] = 'WPA';
-    }
-    $validated['username'] = Str::lower($validated['username']);
-
-    // Handle uploads
-    $profilePath = $request->file('profile_image')
-        ? $request->file('profile_image')->store('profiles', 'public')
-        : $user->profile_image_path;
-
-    $coverPath = $request->file('cover_image')
-        ? $request->file('cover_image')->store('covers', 'public')
-        : $user->cover_image_path;
-
-    // Update user
-    $user->update([
-        'username' => $validated['username'],
-        'name' => $validated['name'],
-        'company' => $validated['company'] ?? null,
-        'email' => $validated['email'] ?? null,
-        'phone' => $validated['phone'] ?? null,
-        'profile_image_path' => $profilePath,
-        'cover_image_path' => $coverPath,
-    ]);
-
-    // Update or create Wi-Fi link
-    $wifiLink = $user->links()->where('type', 'wifi')->first();
-    if (!empty($validated['wifi_ssid'])) {
-        $wifiData = [
-            'user_id' => $user->id,
-            'type' => 'wifi',
-            'label' => 'Wi‑Fi',
-            'data' => [
-                'encryption' => $validated['wifi_encryption'] ?? 'nopass',
-                'ssid' => $validated['wifi_ssid'],
-                'password' => $validated['wifi_password'] ?? '',
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'company' => ['nullable', 'string', 'max:150'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'username' => [
+                'required',
+                'string',
+                'max:30',
+                'regex:/^[A-Za-z0-9._-]+$/',
+                Rule::unique('users', 'username')->ignore($user->id),
+                Rule::notIn(['create', 'admin', 'login', 'register', 'api', 'dashboard']),
             ],
-        ];
-        if ($wifiLink) {
-            $wifiLink->update($wifiData);
-        } else {
-            ProfileLink::create($wifiData);
+            'email' => ['nullable', 'email', 'max:190', Rule::unique('users', 'email')->ignore($user->id)],
+            'profile_image' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'cover_image' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:6144'],
+            'wifi_encryption' => [Rule::in(['WPA', 'WEP', 'nopass', 'WPA2'])],
+            'wifi_ssid' => ['nullable', 'string', 'max:100'],
+            'wifi_password' => ['nullable', 'string', 'max:190'],
+            
+            // --- MODIFICATION START ---
+            'social_links' => ['nullable', 'array', 'max:3'], // Added max:3 rule
+            // --- MODIFICATION END ---
+            
+            'social_links.*.platform' => ['required', Rule::in(['facebook', 'instagram', 'google', 'other'])],
+            'social_links.*.title' => ['required', 'string', 'max:100'],
+            'social_links.*.link' => ['required', 'url', 'max:255'],
+            'social_links.*.image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ], [
+            // Optional: Custom validation message for a better user experience
+            'social_links.max' => 'You can add a maximum of three social links.',
+        ]);
+    
+        // Normalize values
+        if (($validated['wifi_encryption'] ?? null) === 'WPA2') {
+            $validated['wifi_encryption'] = 'WPA';
         }
-    } elseif ($wifiLink) {
-        $wifiLink->delete();
-    }
-
-    // Update social links
-    $user->links()->where('type', 'social')->delete();
-    if (!empty($validated['social_links'])) {
-        foreach ($validated['social_links'] as $index => $social) {
-            $imagePath = $request->file("social_links.{$index}.image")
-                ? $request->file("social_links.{$index}.image")->store('social_icons', 'public')
-                : null;
-
-            ProfileLink::create([
+        $validated['username'] = Str::lower($validated['username']);
+    
+        // Handle uploads
+        $profilePath = $request->file('profile_image')
+            ? $request->file('profile_image')->store('profiles', 'public')
+            : $user->profile_image_path;
+    
+        $coverPath = $request->file('cover_image')
+            ? $request->file('cover_image')->store('covers', 'public')
+            : $user->cover_image_path;
+    
+        // Update user
+        $user->update([
+            'username' => $validated['username'],
+            'name' => $validated['name'],
+            'company' => $validated['company'] ?? null,
+            'email' => $validated['email'] ?? null,
+            'phone' => $validated['phone'] ?? null,
+            'profile_image_path' => $profilePath,
+            'cover_image_path' => $coverPath,
+        ]);
+    
+        // Update or create Wi-Fi link
+        $wifiLink = $user->links()->where('type', 'wifi')->first();
+        if (!empty($validated['wifi_ssid'])) {
+            $wifiData = [
                 'user_id' => $user->id,
-                'type' => 'social',
-                'label' => $social['title'],
+                'type' => 'wifi',
+                'label' => 'Wi‑Fi',
                 'data' => [
-                    'platform' => $social['platform'],
-                    'url' => $social['link'],
-                    'icon_path' => $imagePath,
+                    'encryption' => $validated['wifi_encryption'] ?? 'nopass',
+                    'ssid' => $validated['wifi_ssid'],
+                    'password' => $validated['wifi_password'] ?? '',
                 ],
-            ]);
+            ];
+            if ($wifiLink) {
+                $wifiLink->update($wifiData);
+            } else {
+                ProfileLink::create($wifiData);
+            }
+        } elseif ($wifiLink) {
+            $wifiLink->delete();
         }
+    
+        // Update social links
+        $user->links()->where('type', 'social')->delete();
+        if (!empty($validated['social_links'])) {
+            foreach ($validated['social_links'] as $index => $social) {
+                $imagePath = null;
+                if ($request->hasFile("social_links.{$index}.image")) {
+                     $imagePath = $request->file("social_links.{$index}.image")->store('social_icons', 'public');
+                }
+    
+                ProfileLink::create([
+                    'user_id' => $user->id,
+                    'type' => 'social',
+                    'label' => $social['title'],
+                    'data' => [
+                        'platform' => $social['platform'],
+                        'url' => $social['link'],
+                        'icon_path' => $imagePath,
+                    ],
+                ]);
+            }
+        }
+    
+        // Build public URL
+        $url = route('profiles.show', $user->username);
+    
+        return redirect()
+            ->route('profiles.create')
+            ->with('created_url', $url)
+            ->with('success', 'Profile updated successfully!');
     }
-
-    // Build public URL
-    $url = route('profiles.show', $user->username);
-
-    return redirect()
-        ->route('profiles.create')
-        ->with('created_url', $url)
-        ->with('success', 'Profile updated successfully!');
-}
 
     /**
      * Public profile page (by username)
