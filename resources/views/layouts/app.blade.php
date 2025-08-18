@@ -6,7 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   
   {{-- Load compiled Tailwind CSS via Vite --}}
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter','ui-sans-serif','system-ui','-apple-system','Segoe UI','Roboto','Helvetica Neue','Arial','Noto Sans'] },
+          colors: {
+            brand: { 50:'#eef2ff',100:'#e0e7ff',200:'#c7d2fe',300:'#a5b4fc',400:'#818cf8',500:'#6366f1',600:'#5458e6',700:'#4343c7',800:'#3738a3',900:'#2e2f89' }
+          },
+          boxShadow: {
+            card: '0 10px 30px -12px rgba(2,6,23,0.18)',
+            ring: '0 0 0 1px rgba(15,23,42,0.06)'
+          }
+        }
+      }
+    }
+  </script>
   
   {{-- Lucide Icons --}}
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -245,7 +265,7 @@
            <img src="{{ asset('logo.png') }}" alt="Logo"  class="h-10 w-auto block object-contain">
         </a>
 
-        <div class="ml-auto flex items-center gap-2 text-sm text-gray-500">
+        <div class=" hidden  ml-auto md:flex items-center gap-2 text-sm text-gray-500">
             <i data-lucide="zap" class="w-4 h-4"></i>
             <span>NFC Public Business Profile</span>
         </div>
@@ -255,7 +275,7 @@
             <form action="{{ route('profiles.logout') }}" method="POST" class="ml-4">
                 @csrf
                 <button type="submit"
-                    class="btn btn-ghost text-sm px-4 py-2 rounded-lg hover:bg-red-50 hover:text-red-600 border border-red-200 transition">
+                    class="btn text-sm px-4 py-2 rounded-lg bg-red-50 text-red-600 border border-red-200">
                     <i data-lucide="log-out" class="w-4 h-4"></i> Logout
                 </button>
             </form>

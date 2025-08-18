@@ -6,17 +6,17 @@
         {{-- Cover Image --}}
         <div class="relative h-48 sm:h-64 bg-gray-200">
             @if ($profile->cover_image_path)
-                <img src="{{ asset('storage/' . $profile->cover_image_path) }}" alt="Cover"
+                <img src="{{ asset('uploads/' . $profile->cover_image_path) }}" alt="Cover"
                     class="h-full w-full object-cover">
             @endif
         </div>
 
         <div class="px-6 sm:px-8 pt-16 pb-8">
-            <div class="flex flex-wrap items-start gap-6">
+            <div class="flex flex-wrap md:flex-row md:items-start gap-6 flex-col ">
                 <div class="bg-grey-50 flex flex-col items-center p-4 rounded-2xl bg-white mt-[-150px] z-10 shadow-md">
                     <div class="h-20 w-20 sm:h-32 sm:w-32 rounded-2xl bg-grey-500 bounce-in mb-4 mt-4">
                         @if ($profile->profile_image_path)
-                            <img src="{{ asset('storage/' . $profile->profile_image_path) }}" alt="Avatar"
+                            <img src="{{ asset('uploads/' . $profile->profile_image_path) }}" alt="Avatar"
                                 class="h-full w-full overflow-hidden object-cover rounded-full">
                         @endif
                     </div>
@@ -68,7 +68,7 @@
                         @foreach ($socials as $social)
                             @php
                                 $platform = $social->data['platform'] ?? '';
-                                $iconPath = $social->data['icon_path'] ? asset('storage/' . $social->data['icon_path']) : asset('assets/icons/' . $platform . '.png');
+                                $iconPath = $social->data['icon_path'] ? asset('uploads/' . $social->data['icon_path']) : asset('assets/icons/' . $platform . '.png');
                                 $colors = [
                                     'facebook' => ['hover:bg-blue-50', 'hover:border-blue-300', 'bg-blue-600'],
                                     'instagram' => ['hover:bg-pink-50', 'hover:border-pink-300', 'bg-pink-500'],
@@ -95,23 +95,35 @@
     @if ($wifi)
         <div id="wifiModal"
             class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4 transition-opacity duration-500 opacity-0">
-            <div class="card w-full max-w-md p-8 text-center slide-up">
-                <h3 class="text-xl font-bold text-gray-900 mb-4">Scan QR code to connect to WiFi</h3>
-                <div class="mb-6">
-                    <img src="{{ route('profiles.wifiQr', $profile) }}" alt="Wi-Fi QR"
+            <div class="card w-full items-center max-w-md p-8 slide-up">
+                <div class="flex items-center gap-4">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Scan QR code to connect to WiFi</h3>
+                </div>
+                
+                <div class="mb-6 flex items-center justify-center gap-4">
+                    <img id="wifiQrImage" src="{{ route('profiles.wifiQr', $profile) }}" alt="Wi-Fi QR"
                         class="mx-auto rounded-2xl border border-gray-200 shadow-lg w-48 h-48">
                 </div>
-                <div class="text-gray-700 text-sm space-y-1">
+
+                <div class="text-gray-700 text-sm space-y-1 flex items-center justify-between">
                     <p>SSID: <strong>{{ $wifi->data['ssid'] ?? '' }}</strong></p>
                     @if (($wifi->data['encryption'] ?? 'nopass') !== 'nopass')
-                        <p>Security: {{ $wifi->data['encryption'] }}</p>
+                        <p>Security: <strong>{{ $wifi->data['encryption'] }}</strong></p>
                     @endif
                 </div>
-                <h1 class="font-bold text-sm mt-2">Note iPhone users</h1>
-                <p class="text-sm">To connect to WiFi, press and hold QR code for 2 sec. and select from pop-up menu.</p>
-                <h1 class="font-bold text-sm mt-2">Note Android users</h1>
-                <p class="text-sm">QR code can be downloaded and saved to connect with WiFi.</p>
-                <button class="btn btn-primary mt-6" onclick="closeWifi()">Close</button>
+                <h1 class="font-bold text-sm mt-2 items-center">Note iPhone users</h1>
+                <p class="text-sm items-center">To connect to WiFi, press and hold QR code for 2 sec. and select from pop-up menu.</p>
+                <h1 class="font-bold text-sm mt-2 items-center">Note Android users</h1>
+                <p class="text-sm items-center">QR code can be downloaded and saved to connect with WiFi.</p>
+                <div class="flex gap-3">
+                    <a class="btn btn-ghost flex-1" onclick="downloadQrCode()">
+                        <i data-lucide="download" class="w-4 h-4"></i> QR Code
+                    </a>
+                    <button class="btn btn-primary flex-1" onclick="closeWifi()">
+                      <i data-lucide="cross" class="w-4 h-4"></i>
+                      Close
+                    </button>
+                  </div>
             </div>
         </div>
     @endif
@@ -137,6 +149,23 @@
                     modal.classList.remove('flex');
                 }, 500);
             }
+        }
+
+        function downloadQrCode() {
+            const qrImage = document.getElementById('wifiQrImage');
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = qrImage.naturalWidth;
+            canvas.height = qrImage.naturalHeight;
+
+            // Draw the image onto the canvas
+            context.drawImage(qrImage, 0, 0);
+
+            // Create a download link
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'wifi-qr-code.png';
+            link.click();
         }
 
         // Initialize animations on page load

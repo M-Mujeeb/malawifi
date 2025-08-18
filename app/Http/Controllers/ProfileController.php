@@ -10,9 +10,67 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Laravel\Socialite\Facades\Socialite;
+
 
 class ProfileController extends Controller
 {
+
+    public function googleRedirect()
+{
+    // If sessions are flaky on shared hosting, keep stateless() also on redirect not needed.
+    return Socialite::driver('google')->redirect();
+}
+public function googleCallback(Request $request)
+{
+    try {
+        // If you run into "Invalid state" on shared hosting, switch to stateless():
+        // $googleUser = Socialite::driver('google')->stateless()->user();
+        $googleUser = Socialite::driver('google')->user();
+    } catch (\Throwable $e) {
+        return redirect()->route('login')
+            ->withErrors(['auth' => 'Google sign-in failed. Please try again.']);
+    }
+
+    // Find existing user by email
+    $user = User::where('email', $googleUser->getEmail())->first();
+
+    if (!$user) {
+        // Create a new local user record
+        $baseUsername = Str::slug($googleUser->getName() ?: Str::before($googleUser->getEmail(), '@'));
+        $username = $baseUsername ?: 'user';
+        // Ensure unique username
+        $suffix = 0;
+        while (User::where('username', $username)->exists()) {
+            $suffix++;
+            $username = $baseUsername . $suffix;
+        }
+
+        $user = User::create([
+            'name'               => $googleUser->getName() ?: Str::title(Str::before($googleUser->getEmail(), '@')),
+            'email'              => $googleUser->getEmail(),
+            'username'           => $username,
+            // Random local password (not used for Google flow, just to satisfy DB)
+            'password'           => Hash::make(Str::random(24)),
+            // (optional) save avatar if you want to later download/store it
+            // 'profile_image_path' => ...
+        ]);
+    }
+
+    // Log them in with the web guard
+    Auth::login($user, remember: true);
+
+    // Your simple “web token” for middleware
+    $request->session()->regenerate();
+    $webToken = Str::random(60);
+    session(['access_token' => $webToken]);
+
+    return redirect()
+        ->route('profiles.create')
+        ->with('success', 'Logged in with Google!')
+        ->with('token', $webToken);
+}
+
     /**
      * Show public profile creation form
      */
@@ -30,7 +88,9 @@ class ProfileController extends Controller
 
     // Split links for convenient usage in Blade
     $wifi    = $user->links->firstWhere('type', 'wifi');
-    $socials = $user->links->whereIn('type', ['facebook','instagram','whatsapp','website','google']);
+    $socials = $user->links->whereIn('type', ['social']);
+
+    // dd($socials);
 
     return view('profiles.create', [
         'user'    => $user,
@@ -65,16 +125,16 @@ class ProfileController extends Controller
             Rule::notIn(['create', 'admin', 'login', 'register', 'api', 'dashboard']),
         ],
         'email' => ['nullable', 'email', 'max:190', Rule::unique('users', 'email')->ignore($user->id)],
-        'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
-        'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:6144'],
-        'wifi_encryption' => ['nullable', Rule::in(['WPA', 'WEP', 'nopass', 'WPA2'])],
-        'wifi_ssid' => ['nullable', 'string', 'max:100'],
-        'wifi_password' => ['nullable', 'string', 'max:190'],
-        'social_links' => ['nullable', 'array'],
+        'profile_image' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+        'cover_image' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:6144'],
+        'wifi_encryption' => [Rule::in(['WPA', 'WEP', 'nopass', 'WPA2'])],
+        'wifi_ssid' => ['string', 'max:100'],
+        'wifi_password' => ['string', 'max:190'],
+        'social_links' => ['array'],
         'social_links.*.platform' => ['required', Rule::in(['facebook', 'instagram', 'google'])],
         'social_links.*.title' => ['required', 'string', 'max:100'],
         'social_links.*.link' => ['required', 'url', 'max:255'],
-        'social_links.*.image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        'social_links.*.image' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
     ]);
 
     // Normalize values
@@ -294,7 +354,7 @@ class ProfileController extends Controller
     $request->session()->regenerateToken(); 
     $request->session()->forget('access_token');
 
-    return redirect()->route('profiles.login')
+    return redirect()->route('login')
         ->with('success', 'Logged out.');
 }
 

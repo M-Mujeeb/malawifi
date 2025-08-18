@@ -62,8 +62,8 @@
         }
     </style>
 
-     {{-- Favicon --}}
-  <link rel="icon" href="{{ asset('favicon.ico') }}">
+    {{-- Favicon --}}
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
 </head>
 
 <body class="bg-slate-50 text-slate-900 font-sans">
@@ -77,47 +77,48 @@
         </div>
 
         <!-- Card -->
-        <section class="relative z-10 w-full max-w-md">
+        <section class="relative z-10 w-full max-w-md px-4">
             <div class="rounded-2xl p-8 md:p-10 bg-white/60 backdrop-blur-xl ring-1 ring-slate-200/70 shadow-glow">
                 <div class="flex flex-col items-center mb-6">
                     <img src="{{ asset('logo.png') }}" alt="Logo" class="h-12 w-auto block object-contain mb-3">
                     <h1 class="text-xl font-semibold tracking-tight">Welcome back</h1>
-                  </div>
+                </div>
                 @if ($errors->any())
-                <div id="errorMsg" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl shake">
-                  <div class="flex items-center gap-2 text-red-700 mb-2">
-                    <i data-lucide="alert-circle" class="w-5 h-5"></i>
-                    <span class="font-medium">Please fix the following errors:</span>
-                  </div>
-                  <ul class="list-disc ml-7 text-red-600 text-sm space-y-1">
-                    @foreach ($errors->all() as $error)
-                      <li>{{ $error }}</li>
-                    @endforeach
-                  </ul>
-                </div>
-              @endif
-        
-              @if(session('success'))
-              <div id="successMsg" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl bounce-in">
-                <div class="flex items-center gap-2 text-green-700">
-                  <i data-lucide="check-circle" class="w-5 h-5 success-checkmark"></i>
-                  <span class="font-medium">{{ session('success') }}</span>
-                </div>
-              </div>
-            @endif
+                    <div id="errorMsg" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl shake">
+                        <div class="flex items-center gap-2 text-red-700 mb-2">
+                            <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                            <span class="font-medium">Please fix the following errors:</span>
+                        </div>
+                        <ul class="list-disc ml-7 text-red-600 text-sm space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                @if (session('success'))
+                    <div id="successMsg" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl bounce-in">
+                        <div class="flex items-center gap-2 text-green-700">
+                            <i data-lucide="check-circle" class="w-5 h-5 success-checkmark"></i>
+                            <span class="font-medium">{{ session('success') }}</span>
+                        </div>
+                    </div>
+                @endif
 
                 <p class="text-sm text-slate-600 mb-6">Sign in to continue to your dashboard.</p>
 
-                <form id="loginForm" method="POST" action="{{ route('profiles.loginSubmit') }}" enctype="multipart/form-data" class="space-y-4" novalidate>
-                  @csrf
+                <form id="loginForm" method="POST" action="{{ route('profiles.loginSubmit') }}"
+                    enctype="multipart/form-data" class="space-y-4" novalidate>
+                    @csrf
                     <!-- Email -->
                     <div class="group relative">
                         <div
                             class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 group-focus-within:text-brand-500 transition-colors">
                             <i data-lucide="mail" class="h-4 w-4"></i>
                         </div>
-                        <input id="email" type="email" inputmode="email" value="{{ old('email') }}" autocomplete="email" name="email"
-                            placeholder="Email address"
+                        <input id="email" type="email" inputmode="email" value="{{ old('email') }}"
+                            autocomplete="email" name="email" placeholder="Email address"
                             class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/80 ring-1 ring-slate-200/70 focus:outline-none focus:ring-2 focus:ring-brand-500/70 placeholder:text-slate-400 transition"
                             required />
                     </div>
@@ -141,18 +142,27 @@
 
                     <div id="errorMsg" class="hidden text-sm text-red-600"></div>
 
-                    <div class="flex items-center justify-between pt-1">
-                        <div></div>
-                        <a href="#" class="text-sm text-brand-600 hover:text-brand-500 font-medium">Forgot
-                            password?</a>
-                    </div>
+
 
                     <button type="submit"
                         class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/30 transition">
                         <i data-lucide="log-in" class="h-5 w-5"></i>
                         Sign in
                     </button>
-
+                    <a href="{{ route('oauth.google.redirect') }}"
+                        class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 48 48">
+                            <path fill="#FFC107"
+                                d="M43.611 20.083H42V20H24v8h11.303C33.677 32.659 29.223 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.84 1.156 7.957 3.043l5.657-5.657C34.671 6.053 29.601 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.651-.389-3.917z" />
+                            <path fill="#FF3D00"
+                                d="M6.306 14.691l6.571 4.814C14.388 16.286 18.83 13 24 13c3.059 0 5.84 1.156 7.957 3.043l5.657-5.657C34.671 6.053 29.601 4 24 4c-7.938 0-14.64 4.614-17.694 10.691z" />
+                            <path fill="#4CAF50"
+                                d="M24 44c5.166 0 9.86-1.984 13.409-5.217l-6.211-5.268C29.141 35.091 26.715 36 24 36c-5.202 0-9.646-3.317-11.292-7.946l-6.549 5.05C9.186 39.37 16.061 44 24 44z" />
+                            <path fill="#1976D2"
+                                d="M43.611 20.083H42V20H24v8h11.303c-1.093 3.106-3.353 5.559-6.105 7.066l.004-.003 6.211 5.268C37.129 41.854 44 37.5 44 24c0-1.341-.138-2.651-.389-3.917z" />
+                        </svg>
+                        Continue with Google
+                    </a>
 
 
                     <p class="text-center text-sm text-slate-600">
