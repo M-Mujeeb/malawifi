@@ -262,7 +262,7 @@
                   <option value="facebook">Facebook</option>
                   <option value="instagram">Instagram</option>
                   <option value="google">Google</option>
-                  <option value="other">Other</option>
+                  <option value="website">Website</option>
                 </select>
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transform transition-transform duration-200"></i>
@@ -290,7 +290,7 @@
                     </div>
 
                     {{-- Show Icon Uploader ONLY for 'other' platform --}}
-                    @if($social->data['platform'] === 'other')
+                    @if($social->data['platform'] === 'website')
                     <div>
                       <label class="label flex items-center gap-2">
                         <i data-lucide="image" class="w-4 h-4 text-blue-600"></i>
@@ -438,6 +438,7 @@
               <i data-lucide="copy" class="w-4 h-4"></i>
             </button>
           </div>
+          <p class="text-sm text-gray-600 mt-1">First download the NFC Tools app from the <a href="https://apps.apple.com/us/app/nfc-tools/id1252962749" class="text-blue-500 hover:underline" target="_blank">App Store</a> or  <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc&hl=en&pli=1" class="text-blue-500 hover:underline" target="_blank">Play Store</a> . Open the app, select the option to write data, and choose above url. Enter your MalaWi-Fi link and write it onto the NFC chip.</p>
         </div>
         
         <div class="flex gap-3">
@@ -564,7 +565,7 @@
     
     let iconUploadHTML = '';
     // Only show the icon uploader if the platform is 'other'
-    if (platform === 'other') {
+    if (platform === 'website') {
       iconUploadHTML = `
         <div>
           <label class="label flex items-center gap-2">

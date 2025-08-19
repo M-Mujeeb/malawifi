@@ -134,7 +134,7 @@ public function googleCallback(Request $request)
             'social_links' => ['nullable', 'array', 'max:3'], // Added max:3 rule
             // --- MODIFICATION END ---
             
-            'social_links.*.platform' => ['required', Rule::in(['facebook', 'instagram', 'google', 'other'])],
+            'social_links.*.platform' => ['required', Rule::in(['facebook', 'instagram', 'google', 'website'])],
             'social_links.*.title' => ['required', 'string', 'max:100'],
             'social_links.*.link' => ['required', 'url', 'max:255'],
             'social_links.*.image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],

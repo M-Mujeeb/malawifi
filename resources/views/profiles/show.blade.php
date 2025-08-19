@@ -2,7 +2,7 @@
 @section('title', ($profile->name ?? '@' . $profile->username) . ' — Profile')
 
 @section('content')
-    <div class="card fade-in h-[750px] bg-[#F6F6F6] max-w-[900px] mx-auto">
+    <div class="card fade-in h-[850px] bg-[#F6F6F6] max-w-[900px] mx-auto">
         {{-- Cover Image --}}
         <div class="relative h-48 sm:h-64 bg-gray-200">
             @if ($profile->cover_image_path)
@@ -13,7 +13,7 @@
 
         <div class="px-6 sm:px-8 pt-16 pb-8">
             <div class="flex flex-wrap md:flex-row md:items-start gap-6 flex-col ">
-                <div class="bg-grey-50 flex flex-col items-center p-4 rounded-2xl bg-white mt-[-150px] z-10 shadow-md">
+                <div class="bg-grey-50 flex flex-col items-center p-3 rounded-2xl bg-white mt-[-150px] z-10 shadow-md">
                     <div class="h-20 w-20 sm:h-32 sm:w-32 rounded-2xl bg-grey-500 bounce-in mb-4 mt-4">
                         @if ($profile->profile_image_path)
                             <img src="{{ asset('uploads/' . $profile->profile_image_path) }}" alt="Avatar"
@@ -21,25 +21,8 @@
                         @endif
                     </div>
                     <div class="min-w-[240px] slide-up">
-                        <h1 class="text-2xl font-normal tracking-tight text-black flex items-center justify-center gap-2">
+                        <h1 class="text-xl font-normal tracking-tight text-black flex items-center justify-center gap-2">
                             {{ $profile->name }}</h1>
-                        <h4 class="text-gray-600 text-lg mt-1 flex items-center justify-center gap-2">
-                            <i data-lucide="at-sign" class="w-5 h-5 text-gray-500"></i>{{ $profile->username }}
-                        </h4>
-
-                        @if ($profile->company)
-                            <h4 class="text-gray-700 mt-2 font-medium flex items-center justify-center gap-2">
-                                {{ $profile->company }}</h4>
-                        @endif
-                        @if ($profile->email)
-                            <h4 class="text-gray-600 text-md mt-1 flex items-center justify-center gap-2">
-                                {{ $profile->email }}</h4>
-                        @endif
-                        @if ($profile->phone)
-                            <h4 class="text-gray-600 text-md mt-1 flex items-center justify-center gap-2">
-                                {{ $profile->phone }}</h4>
-                        @endif
-
                         <!-- Buttons for Email and Phone -->
                         <div class="mt-4 flex gap-4 justify-center">
                             @if ($profile->email)
@@ -108,10 +91,11 @@
             </div>
 
             <!-- Footer Text -->
-            <div class="mt-12 text-center text-gray-600 text-sm border-t border-gray-200 pt-4">
-                <p> To purchase MalaWi-Fi please visit our <a href="https://malawichair.com/products/malawi-fi-tap-to-connect-wi-fi-device" target="_blank"
+            <div class="mt-12 flex flex-col justify-center items-center text-gray-600 text-sm border-t border-gray-200 pt-4">
+                <img src="{{ asset('malawifi.webp') }}" alt="MalaWi-Fi Device" class="h-20 w-auto object-contain mb-4">
+                <p class="items-center"> To purchase MalaWi-Fi please visit our <a href="https://malawichair.com/products/malawi-fi-tap-to-connect-wi-fi-device" target="_blank"
                         class="text-blue-500 hover:underline">website</a></p>
-                Tap. Connect. Done
+                <p class="items-center">Tap. Connect. Done</p>
             </div>
         </div>
     </div>
