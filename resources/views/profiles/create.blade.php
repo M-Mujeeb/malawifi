@@ -55,15 +55,26 @@
           <div class="grid md:grid-cols-2 gap-6">
             <div class="slide-up" style="animation-delay: 0.1s">
               <label class="label">
-                Full Name <span class="text-red-500">*</span>
+                Malawi-Fi Name  <span class="text-red-500">*</span>
               </label>
               <div class="input-group">
                 <i data-lucide="user" class="input-icon w-4 h-4"></i>
-                <input name="name" value="{{ old('name', $user->name) }}" class="inp inp-icon" required placeholder="Enter your full name">
+                <input name="name" value="{{ old('name', $user->name) }}" class="inp inp-icon" required placeholder="Enter MalaWi-Fi Device Name">
               </div>
             </div>
+            <div class="slide-up" style="animation-delay: 0.4s">
+              <label class="label">Phone Number <span class="text-red-500">*</span></label>
+              <div class="input-group">
+                <i data-lucide="phone" class="input-icon w-4 h-4"></i>
+                <input name="phone" value="{{ old('phone', $user->phone) }}" class="inp inp-icon" required placeholder="+923001234567" pattern="\+[0-9]{10,15}">
+              </div>
+              <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                <i data-lucide="info" class="w-3 h-3"></i>
+                Format: + followed by 10-15 digits
+              </p>
+            </div>
             
-            <div class="slide-up" style="animation-delay: 0.2s">
+            {{-- <div class="slide-up" style="animation-delay: 0.2s">
               <label class="label">Company <span class="text-red-500">*</span></label>
               <div class="input-group">
                 <i data-lucide="building" class="input-icon w-4 h-4"></i>
@@ -73,7 +84,7 @@
                 <i data-lucide="info" class="w-3 h-3"></i>
                 Allowed: letters, numbers, spaces, and - & , .
               </p>
-            </div>
+            </div> --}}
           </div>
 
           <div class="grid md:grid-cols-2 gap-6">
@@ -112,17 +123,7 @@
               </div>
             </div>
             
-            <div class="slide-up" style="animation-delay: 0.4s">
-              <label class="label">Phone Number <span class="text-red-500">*</span></label>
-              <div class="input-group">
-                <i data-lucide="phone" class="input-icon w-4 h-4"></i>
-                <input name="phone" value="{{ old('phone', $user->phone) }}" class="inp inp-icon" required placeholder="+923001234567" pattern="\+[0-9]{10,15}">
-              </div>
-              <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                <i data-lucide="info" class="w-3 h-3"></i>
-                Format: + followed by 10-15 digits
-              </p>
-            </div>
+            
           </div>
         </div>
 
@@ -438,7 +439,24 @@
               <i data-lucide="copy" class="w-4 h-4"></i>
             </button>
           </div>
-          <p class="text-sm text-gray-600 mt-1">First download the NFC Tools app from the <a href="https://apps.apple.com/us/app/nfc-tools/id1252962749" class="text-blue-500 hover:underline" target="_blank">App Store</a> or  <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc&hl=en&pli=1" class="text-blue-500 hover:underline" target="_blank">Play Store</a> . Open the app, select the option to write data, and choose above url. Enter your MalaWi-Fi link and write it onto the NFC chip.</p>
+          <p class="text-sm text-gray-700 mt-2 leading-relaxed">
+            First, download the 
+            <img src="{{ asset('nfc.jpg') }}" alt="NFC Tools" class="w-6 h-6 inline"> 
+            <b>NFC Tools</b> app from the 
+            <a href="https://apps.apple.com/us/app/nfc-tools/id1252962749" class="text-blue-500 hover:underline" target="_blank">App Store</a> 
+            or 
+            <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc&hl=en&pli=1" class="text-blue-500 hover:underline" target="_blank">Play Store</a>.
+            </p>
+            
+            <p class="text-sm text-gray-700 mt-2 leading-relaxed">
+          Open the app and go to <b>Write</b> → <b>Add a Record</b> → <b>URL/URI</b>.  
+            Enter your MalaWi-Fi profile link and write it onto your device.
+            </p>
+            
+            <p class="text-sm text-gray-700 mt-2 leading-relaxed">
+            ✅ Once written, simply tap the NFC device with your phone to access your MalaWi-Fi.
+            </p>
+            
         </div>
         
         <div class="flex gap-3">
@@ -805,18 +823,18 @@
     });
 
     // Validate company name
-    const companyInput = form.querySelector('input[name="company"]');
-    if (companyInput && companyInput.value && !/^[A-Za-z0-9\s\-&,.]+$/.test(companyInput.value)) {
-      companyInput.classList.add('border-red-300');
-      companyInput.parentElement.classList.add('shake');
-      hasErrors = true;
-      customErrors.push('Company name can only contain letters, numbers, spaces, and - & , .');
+    // const companyInput = form.querySelector('input[name="company"]');
+    // if (companyInput && companyInput.value && !/^[A-Za-z0-9\s\-&,.]+$/.test(companyInput.value)) {
+    //   companyInput.classList.add('border-red-300');
+    //   companyInput.parentElement.classList.add('shake');
+    //   hasErrors = true;
+    //   customErrors.push('Company name can only contain letters, numbers, spaces, and - & , .');
       
-      setTimeout(() => {
-        companyInput.classList.remove('border-red-300');
-        companyInput.parentElement.classList.remove('shake');
-      }, 1000);
-    }
+    //   setTimeout(() => {
+    //     companyInput.classList.remove('border-red-300');
+    //     companyInput.parentElement.classList.remove('shake');
+    //   }, 1000);
+    // }
 
     // Validate phone number
     const phoneInput = form.querySelector('input[name="phone"]');
